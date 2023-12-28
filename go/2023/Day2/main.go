@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"fmt"
+	"errors"
 	"log"
 	"os"
 	"regexp"
@@ -50,11 +50,8 @@ func parseLine(line string) (Game, error) {
 	// Game 77: 3 green, 5 red, 8 blue; 14 red, 15 green; 14 green, 1 blue, 2 red
 	lineparts := strings.Split(line, ":")
 
-	fmt.Printf("%s  \n", lineparts[0])
-
 	// parse the game ID
 	gameIdMatches := idRegex.FindSubmatch([]byte(lineparts[0]))
-	fmt.Printf("%s  \n", gameIdMatches)
 	id, err := strconv.Atoi(string(gameIdMatches[0]))
 	if err != nil {
 		return g, err
@@ -76,7 +73,6 @@ func parseLine(line string) (Game, error) {
 			var countRegex = regexp.MustCompile("[0-9]+")
 
 			// parse the count
-			fmt.Println(setItem)
 			countMatches := countRegex.FindSubmatch([]byte(setItem))
 			count, err := strconv.Atoi(string(countMatches[0]))
 			if err != nil {
@@ -102,23 +98,68 @@ func parseLine(line string) (Game, error) {
 
 }
 
-func ParseGames(fileContents []string) ([]*Game, error) {
+func isPossible(game Game, red int, green int, blue int) bool {
+	for _, gameSet := range game.Sets {
+		if red < gameSet.Red || blue < gameSet.Blue || green < gameSet.Green {
+			return false
+		}
+	}
 
+	return true
+}
+
+func checkGames(games []Game, red int, green int, blue int) int {
+	total := 0
+
+	for _, g := range games {
+		if isPossible(g, red, green, blue) {
+			total += g.ID
+		}
+	}
+	return total
+
+}
+
+func parseGames(fileContents []string) ([]Game, error) {
+	games := make([]Game, 0)
 	for _, line := range fileContents {
-		_, err := parseLine(line)
+
+		g, err := parseLine(line)
 		if err != nil {
 			return nil, err
 		}
+		games = append(games, g)
 	}
-	return nil, nil
+
+	return games, nil
 }
 
 func main() {
-	log.Println("BEGIN")
+	args := os.Args[1:]
+	if len(args) != 3 {
+		log.Fatal(errors.New("Usage: runme <red count> <green count> <blue count>"))
+	}
+
+	var argInts = []int{}
+
+	for _, i := range args {
+		j, err := strconv.Atoi(i)
+		if err != nil {
+			log.Fatal(err)
+		}
+		argInts = append(argInts, j)
+	}
+
 	fileContents, err := ScanFile(inputFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	ParseGames(fileContents)
+	games, err := parseGames(fileContents)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	total := checkGames(games, argInts[0], argInts[1], argInts[2])
+	log.Printf("Total: %v", total)
 }
