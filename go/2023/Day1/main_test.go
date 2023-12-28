@@ -21,6 +21,13 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
+func TestScanFile(t *testing.T) {
+	fileContents, err = ScanFile("input")
+	assert.NoError(t, err)
+
+	assert.Equal(t, len(fileContents), 1000)
+}
+
 func TestFindResultPart1(t *testing.T) {
 	value, err := FindResultPart1(fileContents)
 
