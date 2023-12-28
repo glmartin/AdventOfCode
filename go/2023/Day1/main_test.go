@@ -25,7 +25,7 @@ func TestScanFile(t *testing.T) {
 	fileContents, err = ScanFile("input")
 	assert.NoError(t, err)
 
-	assert.Equal(t, len(fileContents), 1000)
+	assert.Equal(t, 1000, len(fileContents))
 }
 
 func TestFindResultPart1(t *testing.T) {
