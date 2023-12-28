@@ -1,16 +1,28 @@
 package main
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFindResultPart1(t *testing.T) {
-	scanner, err := ScanFile(inputFileName)
-	assert.NoError(t, err)
+var fileContents []string
+var err error
 
-	value, err := FindResultPart1(scanner)
+func TestMain(m *testing.M) {
+	fileContents, err = ScanFile("input")
+	if err != nil {
+		panic(err)
+	}
+
+	exitVal := m.Run()
+
+	os.Exit(exitVal)
+}
+
+func TestFindResultPart1(t *testing.T) {
+	value, err := FindResultPart1(fileContents)
 
 	assert.NoError(t, err)
 
@@ -19,10 +31,7 @@ func TestFindResultPart1(t *testing.T) {
 }
 
 func TestFindResultPart2(t *testing.T) {
-	scanner, err := ScanFile(inputFileName)
-	assert.NoError(t, err)
-
-	value, err := FindResultPart2(scanner)
+	value, err := FindResultPart2(fileContents)
 
 	assert.NoError(t, err)
 

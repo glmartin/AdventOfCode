@@ -60,7 +60,7 @@ func toDigit(s string) string {
 
 func ScanFile(inputFile string) ([]string, error) {
 	// open the inoput file
-	file, err := os.Open("input")
+	file, err := os.Open(inputFile)
 	if err != nil {
 		return nil, err
 	}
