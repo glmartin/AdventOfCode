@@ -120,6 +120,44 @@ func checkGames(games []Game, red int, green int, blue int) int {
 
 }
 
+func findMinSet(game Game) GameSet {
+	minSet := GameSet{}
+	for _, gameSet := range game.Sets {
+		if gameSet.Red > minSet.Red {
+			minSet.Red = gameSet.Red
+		}
+		if gameSet.Blue > minSet.Blue {
+			minSet.Blue = gameSet.Blue
+		}
+		if gameSet.Green > minSet.Green {
+			minSet.Green = gameSet.Green
+		}
+	}
+
+	return minSet
+}
+
+func findMinSetPower(game Game) int {
+	gs := findMinSet(game)
+
+	power := gs.Red
+	power = power * gs.Blue
+	power = power * gs.Green
+	return power
+
+}
+
+func findMinSetsTotalPower(games []Game) int {
+	total := 0
+
+	for _, g := range games {
+		power := findMinSetPower(g)
+		total += power
+	}
+	return total
+
+}
+
 func parseGames(fileContents []string) ([]Game, error) {
 	games := make([]Game, 0)
 	for _, line := range fileContents {
@@ -136,18 +174,10 @@ func parseGames(fileContents []string) ([]Game, error) {
 
 func main() {
 	args := os.Args[1:]
-	if len(args) != 3 {
-		log.Fatal(errors.New("Usage: runme <red count> <green count> <blue count>"))
-	}
-
-	var argInts = []int{}
-
-	for _, i := range args {
-		j, err := strconv.Atoi(i)
-		if err != nil {
-			log.Fatal(err)
-		}
-		argInts = append(argInts, j)
+	if len(args) != 1 && len(args) != 4 {
+		log.Fatal(errors.New(`Usage: 
+		runme --part1 <red count> <green count> <blue count>
+		runme --part2`))
 	}
 
 	fileContents, err := ScanFile(inputFileName)
@@ -160,6 +190,23 @@ func main() {
 		log.Fatal(err)
 	}
 
-	total := checkGames(games, argInts[0], argInts[1], argInts[2])
-	log.Printf("Total: %v", total)
+	part := args[0]
+
+	if part == "--part1" {
+		var argInts = []int{}
+
+		for _, i := range args[1:4] {
+			j, err := strconv.Atoi(i)
+			if err != nil {
+				log.Fatal(err)
+			}
+			argInts = append(argInts, j)
+		}
+
+		total := checkGames(games, argInts[0], argInts[1], argInts[2])
+		log.Printf("Total: %v", total)
+	} else {
+		total := findMinSetsTotalPower(games)
+		log.Printf("Total Power: %v", total)
+	}
 }
