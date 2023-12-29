@@ -22,7 +22,7 @@ type GameSet struct {
 	Green int
 }
 
-var inputFileName = "input"
+var inputFileName = "2023/Day2/input"
 
 func ScanFile(inputFile string) ([]string, error) {
 	// open the inoput file
@@ -173,6 +173,7 @@ func parseGames(fileContents []string) ([]Game, error) {
 }
 
 func main() {
+	log.Println("**** 2023 - Day 2 ****")
 	args := os.Args[1:]
 	if len(args) != 1 && len(args) != 4 {
 		log.Fatal(errors.New(`Usage: 
@@ -193,6 +194,7 @@ func main() {
 	part := args[0]
 
 	if part == "--part1" {
+		log.Println("--- Part 1")
 		var argInts = []int{}
 
 		for _, i := range args[1:4] {
@@ -206,6 +208,7 @@ func main() {
 		total := checkGames(games, argInts[0], argInts[1], argInts[2])
 		log.Printf("Total: %v", total)
 	} else {
+		log.Println("--- Part 2")
 		total := findMinSetsTotalPower(games)
 		log.Printf("Total Power: %v", total)
 	}
