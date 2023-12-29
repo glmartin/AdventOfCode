@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-var inputFileName = "input"
+var inputFileName = "2023/Day1/input"
 
 var pt1Regex = regexp.MustCompile("\\d")
 
@@ -112,7 +112,7 @@ func FindResultPart2(fileContents []string) (int, error) {
 }
 
 func main() {
-
+	log.Println("**** 2023 - Day 1 ****")
 	fileContents, err := ScanFile(inputFileName)
 	if err != nil {
 		log.Fatal(err)
@@ -120,9 +120,16 @@ func main() {
 	value := 0
 
 	args := os.Args[1:]
-	if args[0] == "part1" {
+	if len(args) != 1 {
+		log.Fatal(`Usage: 
+		runme --part1
+		runme --part2`)
+	}
+	if args[0] == "--part1" {
+		log.Println("--- Part 1")
 		value, err = FindResultPart1(fileContents)
 	} else {
+		log.Println("--- Part 2")
 		value, err = FindResultPart2(fileContents)
 	}
 	if err != nil {
