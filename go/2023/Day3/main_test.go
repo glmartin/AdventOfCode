@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -88,43 +89,33 @@ func TestMain(m *testing.M) {
 }
 
 func TestScanFile(t *testing.T) {
-	fileContents, err = ScanFile("input")
-	assert.NoError(t, err)
-
 	assert.Equal(t, 140, len(fileContents))
 }
 
 func TestCollectSymbols(t *testing.T) {
-	fileContents, err = ScanFile("input")
-	assert.NoError(t, err)
-
 	collectSymbols(fileContents)
 
 	assert.Equal(t, "*@-+#%=/$&", symbols)
 }
 
 func TestFindPossibleNumbers(t *testing.T) {
-
 	result := findPossibleNumbers(input)
-
 	assert.Equal(t, possiblePartNumbers, result)
-
 }
 
 func TestFindPartNumbers(t *testing.T) {
 
 	collectSymbols(input)
-
 	expectedResult := []int{467, 35, 633, 617, 592, 755, 664, 598}
-
 	result, err := findPartNumbers(input, possiblePartNumbers)
 	assert.NoError(t, err)
-
 	assert.Equal(t, expectedResult, result)
 }
 
 func TestIsPartNumbers(t *testing.T) {
 
+	// test against the actual file contents
+	collectSymbols(fileContents)
 	possibleNumber := PossiblePartNumber{
 		Value:      "35",
 		LineNumber: 2,
@@ -137,6 +128,82 @@ func TestIsPartNumbers(t *testing.T) {
 	result := isPartNumbers(possibleNumber, line, lineBefore, lineAfter)
 
 	assert.Equal(t, true, result)
+
+	possibleNumber = PossiblePartNumber{
+		Value:      "3555",
+		LineNumber: 2,
+		Index:      5,
+	}
+	line = ".....3555...."
+	lineBefore = "............."
+	lineAfter = "............."
+
+	for _, c := range symbols {
+		// test other symbols
+		line = fmt.Sprintf(".....3555%s...", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		line = fmt.Sprintf("....%s3555....", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		line = fmt.Sprintf(".....3555.%s..", string(c))
+		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		line = fmt.Sprintf("...%s.3555....", string(c))
+		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		line = ".....3555...."
+		lineBefore = fmt.Sprintf("...%s.........", string(c))
+		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineBefore = fmt.Sprintf("....%s........", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineBefore = fmt.Sprintf(".....%s.......", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineBefore = fmt.Sprintf("......%s......", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineBefore = fmt.Sprintf(".......%s.....", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineBefore = fmt.Sprintf("........%s....", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineBefore = fmt.Sprintf(".........%s...", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineBefore = fmt.Sprintf("..........%s..", string(c))
+		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineBefore = "............"
+
+		lineAfter = fmt.Sprintf("...%s.........", string(c))
+		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineAfter = fmt.Sprintf("....%s........", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineAfter = fmt.Sprintf(".....%s.......", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineAfter = fmt.Sprintf("......%s......", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineAfter = fmt.Sprintf(".......%s.....", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineAfter = fmt.Sprintf("........%s....", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineAfter = fmt.Sprintf(".........%s...", string(c))
+		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+		lineAfter = fmt.Sprintf("..........%s..", string(c))
+		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+
+	}
 }
 
 func TestIsSymbol(t *testing.T) {

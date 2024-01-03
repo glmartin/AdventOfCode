@@ -66,20 +66,15 @@ func findPossibleNumbers(fileContents []string) []PossiblePartNumber {
 	for lineNumber, line := range fileContents {
 
 		numStrs := idRegex.FindAllString(line, -1)
+		indicies := idRegex.FindAllStringIndex(line, -1)
 
-		for _, numStr := range numStrs {
-			// find the index in the string of the number
-			regexStr := numStr + "+"
-			idxRegex := regexp.MustCompile(regexStr)
-			indicies := idxRegex.FindAllStringIndex(line, -1)
-			for _, idx := range indicies {
-				possNum := PossiblePartNumber{
-					LineNumber: lineNumber,
-					Value:      numStr,
-					Index:      idx[0],
-				}
-				numbers = append(numbers, possNum)
+		for i, idx := range indicies {
+			possNum := PossiblePartNumber{
+				LineNumber: lineNumber,
+				Value:      numStrs[i],
+				Index:      idx[0],
 			}
+			numbers = append(numbers, possNum)
 		}
 	}
 	return numbers
@@ -150,7 +145,7 @@ func isPartNumbers(possibleNumber PossiblePartNumber, line string, lineBefore st
 	}
 
 	if lineAfter != "" {
-		// check the line above
+		// check the line below
 		subLine := lineAfter[lowestIndex:highestIndex]
 		if containsSymbol(subLine) {
 			return true
@@ -166,7 +161,7 @@ func isSymbol(char string) bool {
 
 func containsSymbol(val string) bool {
 	for _, char := range val {
-		if strings.ContainsRune(symbols, char) {
+		if isSymbol(string(char)) {
 			return true
 		}
 	}
