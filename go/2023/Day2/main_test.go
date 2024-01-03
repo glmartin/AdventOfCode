@@ -31,88 +31,88 @@ func TestScanFile(t *testing.T) {
 func TestParseLine(t *testing.T) {
 
 	inputMap := map[string]Game{
-		"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green": Game{
+		"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green": {
 			ID: 1,
 			Sets: []GameSet{
-				GameSet{
+				{
 					Red:  4,
 					Blue: 3,
 				},
-				GameSet{
+				{
 					Red:   1,
 					Blue:  6,
 					Green: 2,
 				},
-				GameSet{
+				{
 					Green: 2,
 				},
 			},
 		},
-		"Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue": Game{
+		"Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue": {
 			ID: 2,
 			Sets: []GameSet{
-				GameSet{
+				{
 					Green: 2,
 					Blue:  1,
 				},
-				GameSet{
+				{
 					Red:   1,
 					Blue:  4,
 					Green: 3,
 				},
-				GameSet{
+				{
 					Blue:  1,
 					Green: 1,
 				},
 			},
 		},
-		"Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red": Game{
+		"Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red": {
 			ID: 3,
 			Sets: []GameSet{
-				GameSet{
+				{
 					Red:   20,
 					Green: 8,
 					Blue:  6,
 				},
-				GameSet{
+				{
 					Red:   4,
 					Blue:  5,
 					Green: 13,
 				},
-				GameSet{
+				{
 					Red:   1,
 					Green: 5,
 				},
 			},
 		},
-		"Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red": Game{
+		"Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red": {
 			ID: 4,
 			Sets: []GameSet{
-				GameSet{
+				{
 					Red:   3,
 					Green: 1,
 					Blue:  6,
 				},
-				GameSet{
+				{
 					Red:   6,
 					Green: 3,
 				},
-				GameSet{
+				{
 					Red:   14,
 					Blue:  15,
 					Green: 3,
 				},
 			},
 		},
-		"Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green": Game{
+		"Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green": {
 			ID: 5,
 			Sets: []GameSet{
-				GameSet{
+				{
 					Red:   6,
 					Green: 3,
 					Blue:  1,
 				},
-				GameSet{
+				{
 					Red:   1,
 					Blue:  2,
 					Green: 2,
@@ -177,27 +177,27 @@ func TestCheckGames(t *testing.T) {
 func TestFindMinSet(t *testing.T) {
 
 	inputMap := map[string]GameSet{
-		"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green": GameSet{
+		"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green": {
 			Red:   4,
 			Blue:  6,
 			Green: 2,
 		},
-		"Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue": GameSet{
+		"Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue": {
 			Red:   1,
 			Blue:  4,
 			Green: 3,
 		},
-		"Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red": GameSet{
+		"Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red": {
 			Red:   20,
 			Blue:  6,
 			Green: 13,
 		},
-		"Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red": GameSet{
+		"Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red": {
 			Red:   14,
 			Blue:  15,
 			Green: 3,
 		},
-		"Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green": GameSet{
+		"Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green": {
 			Red:   6,
 			Blue:  2,
 			Green: 3,

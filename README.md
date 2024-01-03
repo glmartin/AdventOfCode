@@ -15,5 +15,5 @@ go run ./2023/Day1 --part1
 Testing is similar:
 ```
 cd go
-go test ./2023/Day1
+go test -v ./2023/Day1
 ```
