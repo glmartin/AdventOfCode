@@ -104,16 +104,13 @@ func TestFindPossibleNumbers(t *testing.T) {
 }
 
 func TestFindPartNumbers(t *testing.T) {
-
 	collectSymbols(input)
-	expectedResult := []int{467, 35, 633, 617, 592, 755, 664, 598}
 	result, err := findPartNumbers(input, possiblePartNumbers)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResult, result)
+	assert.Equal(t, 8, len(result))
 }
 
-func TestIsPartNumbers(t *testing.T) {
-
+func TestisPartNumber(t *testing.T) {
 	// test against the actual file contents
 	collectSymbols(fileContents)
 	possibleNumber := PossiblePartNumber{
@@ -125,7 +122,7 @@ func TestIsPartNumbers(t *testing.T) {
 	lineBefore := input[possibleNumber.LineNumber-1]
 	lineAfter := input[possibleNumber.LineNumber+1]
 
-	result := isPartNumbers(possibleNumber, line, lineBefore, lineAfter)
+	result, _, _, _ := isPartNumber(possibleNumber, line, lineBefore, lineAfter)
 
 	assert.Equal(t, true, result)
 
@@ -141,68 +138,87 @@ func TestIsPartNumbers(t *testing.T) {
 	for _, c := range symbols {
 		// test other symbols
 		line = fmt.Sprintf(".....3555%s...", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ := isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		line = fmt.Sprintf("....%s3555....", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		line = fmt.Sprintf(".....3555.%s..", string(c))
-		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		line = fmt.Sprintf("...%s.3555....", string(c))
-		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		line = ".....3555...."
 		lineBefore = fmt.Sprintf("...%s.........", string(c))
-		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineBefore = fmt.Sprintf("....%s........", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineBefore = fmt.Sprintf(".....%s.......", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineBefore = fmt.Sprintf("......%s......", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineBefore = fmt.Sprintf(".......%s.....", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineBefore = fmt.Sprintf("........%s....", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineBefore = fmt.Sprintf(".........%s...", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineBefore = fmt.Sprintf("..........%s..", string(c))
-		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineBefore = "............"
 
 		lineAfter = fmt.Sprintf("...%s.........", string(c))
-		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineAfter = fmt.Sprintf("....%s........", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineAfter = fmt.Sprintf(".....%s.......", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineAfter = fmt.Sprintf("......%s......", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineAfter = fmt.Sprintf(".......%s.....", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineAfter = fmt.Sprintf("........%s....", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineAfter = fmt.Sprintf(".........%s...", string(c))
-		assert.Equal(t, true, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 
 		lineAfter = fmt.Sprintf("..........%s..", string(c))
-		assert.Equal(t, false, isPartNumbers(possibleNumber, line, lineBefore, lineAfter))
-
+		result, _, _, _ = isPartNumber(possibleNumber, line, lineBefore, lineAfter)
+		assert.Equal(t, true, result)
 	}
 }
 
@@ -243,4 +259,25 @@ func TestContainsSymbol(t *testing.T) {
 	for line, expectedBool := range inputMap {
 		assert.Equalf(t, expectedBool, containsSymbol(line), "%s is incorrect for %s", expectedBool, line)
 	}
+}
+
+func TestFindResultPart2(t *testing.T) {
+
+	var input = []string{
+		"467..114..",
+		"...*......",
+		"..35..633.",
+		"......#...",
+		"617*......",
+		".....+.58.",
+		"..592.....",
+		"......755.",
+		"...$.*....",
+		".664.598..",
+	}
+
+	result, err := FindResultPart2(input)
+	assert.NoError(t, err)
+
+	assert.Equal(t, 467835, result)
 }
