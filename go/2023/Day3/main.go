@@ -90,6 +90,7 @@ func FindResultPart2(fileContents []string) (int, error) {
 		alreadyChecked = append(alreadyChecked, part)
 		for _, otherPart := range partNumbers {
 			if part != otherPart && !slices.Contains(alreadyChecked, otherPart) {
+				// do the 2 parts share the same adjacent symbol?
 				if part.AdjSymbol == otherPart.AdjSymbol {
 					partInt, err := strconv.Atoi(part.Value)
 					if err != nil {
@@ -98,8 +99,7 @@ func FindResultPart2(fileContents []string) (int, error) {
 					otherPartInt, err := strconv.Atoi(otherPart.Value)
 					if err != nil {
 						return 0, err
-					}
-
+					}			
 					total = total + (partInt * otherPartInt)
 				}
 			}
@@ -166,17 +166,19 @@ func findPartNumbers(fileContents []string, possibleNumbers []PossiblePartNumber
 }
 
 // This function will check the strings before, after, above, and below a possible number for symbol.
+// it returns a true if it is a part number, along with the symbol and symbol location of the adjacent symbol
 func isPartNumber(possibleNumber PossiblePartNumber, line string, lineBefore string, lineAfter string) (bool, byte, int, int) {
 
 	lowestIndex := 0
 	highestIndex := len(line)
+	endOfNumberIdx := possibleNumber.Index + len(possibleNumber.Value)
 
 	if possibleNumber.Index > 0 {
 		lowestIndex = possibleNumber.Index - 1
 	}
 
-	if (possibleNumber.Index + len(possibleNumber.Value)) < len(line) {
-		highestIndex = possibleNumber.Index + len(possibleNumber.Value) + 1
+	if endOfNumberIdx < len(line) {
+		highestIndex = endOfNumberIdx + 1
 	}
 
 	if possibleNumber.Index > 0 {
@@ -187,11 +189,11 @@ func isPartNumber(possibleNumber PossiblePartNumber, line string, lineBefore str
 		}
 	}
 
-	if (possibleNumber.Index + len(possibleNumber.Value)) < len(line) {
+	if endOfNumberIdx < len(line) {
 		// check the character to the right
-		if isSymbol(line[(possibleNumber.Index + len(possibleNumber.Value)) : (possibleNumber.Index+len(possibleNumber.Value))+1]) {
-			symbol := line[(possibleNumber.Index+len(possibleNumber.Value))+1]
-			return true, symbol, possibleNumber.LineNumber, (possibleNumber.Index + len(possibleNumber.Value)) + 1
+		if isSymbol(line[endOfNumberIdx : endOfNumberIdx + 1]) {
+			symbol := line[endOfNumberIdx]
+			return true, symbol, possibleNumber.LineNumber, endOfNumberIdx
 		}
 	}
 
@@ -204,7 +206,7 @@ func isPartNumber(possibleNumber PossiblePartNumber, line string, lineBefore str
 			if symbIdx > -1 {
 				symbol = subLine[symbIdx]
 			}
-			return true, symbol, possibleNumber.LineNumber - 1, 0
+			return true, symbol, possibleNumber.LineNumber - 1, symbIdx + lowestIndex
 		}
 	}
 
@@ -217,7 +219,7 @@ func isPartNumber(possibleNumber PossiblePartNumber, line string, lineBefore str
 			if symbIdx > -1 {
 				symbol = subLine[symbIdx]
 			}
-			return true, symbol, possibleNumber.LineNumber + 1, 0
+			return true, symbol, possibleNumber.LineNumber + 1, symbIdx + lowestIndex
 		}
 	}
 

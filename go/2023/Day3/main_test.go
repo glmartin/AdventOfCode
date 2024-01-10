@@ -280,5 +280,4 @@ func TestFindResultPart2(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 467835, result)
-
 }
