@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+
+	"golang.org/x/exp/slices"
 )
 
 var inputFileName = "2023/Day3/input"
@@ -15,6 +17,13 @@ var symbols = ""
 
 type PossiblePartNumber struct {
 	Value      string
+	LineNumber int
+	Index      int
+	AdjSymbol  AdjacentSymbol
+}
+
+type AdjacentSymbol struct {
+	Symbol     byte
 	LineNumber int
 	Index      int
 }
@@ -47,17 +56,61 @@ func collectSymbols(fileContents []string) {
 }
 
 func FindResultPart1(fileContents []string) (int, error) {
-	possibleParts := findPossibleNumbers(fileContents)
-	numbers, err := findPartNumbers(fileContents, possibleParts)
+	partNumbers, err := findParts(fileContents)
 	if err != nil {
 		return 0, err
 	}
 
 	total := 0
-	for _, i := range numbers {
-		total += i
+	for _, part := range partNumbers {
+		partInt, err := strconv.Atoi(part.Value)
+		if err != nil {
+			return 0, err
+		}
+
+		total += partInt
 	}
 	return total, nil
+}
+
+func FindResultPart2(fileContents []string) (int, error) {
+	// In this case, we'll rerun a similar search to part 1, but only for number adjacent to the astrerisk symbol
+	symbols = "*"
+
+	partNumbers, err := findParts(fileContents)
+	if err != nil {
+		return 0, err
+	}
+
+	total := 0
+
+	// loop through each partnumber in a nested loop, finding where they have a common adjacent asterisk
+	alreadyChecked := make([]PossiblePartNumber, 0)
+	for _, part := range partNumbers {
+		alreadyChecked = append(alreadyChecked, part)
+		for _, otherPart := range partNumbers {
+			if part != otherPart && !slices.Contains(alreadyChecked, otherPart) {
+				if part.AdjSymbol == otherPart.AdjSymbol {
+					partInt, err := strconv.Atoi(part.Value)
+					if err != nil {
+						return 0, err
+					}
+					otherPartInt, err := strconv.Atoi(otherPart.Value)
+					if err != nil {
+						return 0, err
+					}
+
+					total = total + (partInt * otherPartInt)
+				}
+			}
+		}
+	}
+	return total, nil
+}
+
+func findParts(fileContents []string) ([]PossiblePartNumber, error) {
+	possibleParts := findPossibleNumbers(fileContents)
+	return findPartNumbers(fileContents, possibleParts)
 }
 
 func findPossibleNumbers(fileContents []string) []PossiblePartNumber {
@@ -80,8 +133,8 @@ func findPossibleNumbers(fileContents []string) []PossiblePartNumber {
 	return numbers
 }
 
-func findPartNumbers(fileContents []string, possibleNumbers []PossiblePartNumber) ([]int, error) {
-	numbers := make([]int, 0)
+func findPartNumbers(fileContents []string, possibleNumbers []PossiblePartNumber) ([]PossiblePartNumber, error) {
+	numbers := make([]PossiblePartNumber, 0)
 
 	// look through all of the possible numbers, and only same the numbers that are adjacent to a symbol (other than period).
 	// the code will need to look to the left, right of the string, as well as the line above and below
@@ -97,19 +150,23 @@ func findPartNumbers(fileContents []string, possibleNumbers []PossiblePartNumber
 			lineAfter = fileContents[possNum.LineNumber+1]
 		}
 
-		if isPartNumbers(possNum, line, lineBefore, lineAfter) {
-			partNum, err := strconv.Atoi(possNum.Value)
-			if err != nil {
-				return numbers, err
+		if isPart, symbol, symbolLine, symbolIdx := isPartNumber(possNum, line, lineBefore, lineAfter); isPart {
+			// save the adjacent symbol
+			adjSymbol := AdjacentSymbol{
+				Symbol:     symbol,
+				LineNumber: symbolLine,
+				Index:      symbolIdx,
 			}
-			numbers = append(numbers, partNum)
+			possNum.AdjSymbol = adjSymbol
+			numbers = append(numbers, possNum)
 		}
 	}
 
 	return numbers, nil
 }
 
-func isPartNumbers(possibleNumber PossiblePartNumber, line string, lineBefore string, lineAfter string) bool {
+// This function will check the strings before, after, above, and below a possible number for symbol.
+func isPartNumber(possibleNumber PossiblePartNumber, line string, lineBefore string, lineAfter string) (bool, byte, int, int) {
 
 	lowestIndex := 0
 	highestIndex := len(line)
@@ -125,14 +182,16 @@ func isPartNumbers(possibleNumber PossiblePartNumber, line string, lineBefore st
 	if possibleNumber.Index > 0 {
 		// check the character to the left
 		if isSymbol(line[(possibleNumber.Index - 1):possibleNumber.Index]) {
-			return true
+			symbol := line[(possibleNumber.Index - 1)]
+			return true, symbol, possibleNumber.LineNumber, possibleNumber.Index - 1
 		}
 	}
 
 	if (possibleNumber.Index + len(possibleNumber.Value)) < len(line) {
 		// check the character to the right
 		if isSymbol(line[(possibleNumber.Index + len(possibleNumber.Value)) : (possibleNumber.Index+len(possibleNumber.Value))+1]) {
-			return true
+			symbol := line[(possibleNumber.Index+len(possibleNumber.Value))+1]
+			return true, symbol, possibleNumber.LineNumber, (possibleNumber.Index + len(possibleNumber.Value)) + 1
 		}
 	}
 
@@ -140,7 +199,12 @@ func isPartNumbers(possibleNumber PossiblePartNumber, line string, lineBefore st
 		// check the line above
 		subLine := lineBefore[lowestIndex:highestIndex]
 		if containsSymbol(subLine) {
-			return true
+			symbIdx := strings.Index(subLine, symbols)
+			var symbol byte = 0
+			if symbIdx > -1 {
+				symbol = subLine[symbIdx]
+			}
+			return true, symbol, possibleNumber.LineNumber - 1, 0
 		}
 	}
 
@@ -148,11 +212,16 @@ func isPartNumbers(possibleNumber PossiblePartNumber, line string, lineBefore st
 		// check the line below
 		subLine := lineAfter[lowestIndex:highestIndex]
 		if containsSymbol(subLine) {
-			return true
+			symbIdx := strings.Index(subLine, symbols)
+			var symbol byte = 0
+			if symbIdx > -1 {
+				symbol = subLine[symbIdx]
+			}
+			return true, symbol, possibleNumber.LineNumber + 1, 0
 		}
 	}
 
-	return false
+	return false, 0, 0, 0
 }
 
 func isSymbol(char string) bool {
@@ -186,11 +255,9 @@ func main() {
 	if args[0] == "--part1" {
 		log.Println("--- Part 1")
 		value, err = FindResultPart1(fileContents)
-		if err != nil {
-			log.Fatal(err)
-		}
 	} else {
 		log.Println("--- Part 2")
+		value, err = FindResultPart2(fileContents)
 	}
 	if err != nil {
 		log.Fatal(err)
