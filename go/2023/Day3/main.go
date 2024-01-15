@@ -99,7 +99,7 @@ func FindResultPart2(fileContents []string) (int, error) {
 					otherPartInt, err := strconv.Atoi(otherPart.Value)
 					if err != nil {
 						return 0, err
-					}			
+					}
 					total = total + (partInt * otherPartInt)
 				}
 			}
@@ -191,7 +191,7 @@ func isPartNumber(possibleNumber PossiblePartNumber, line string, lineBefore str
 
 	if endOfNumberIdx < len(line) {
 		// check the character to the right
-		if isSymbol(line[endOfNumberIdx : endOfNumberIdx + 1]) {
+		if isSymbol(line[endOfNumberIdx : endOfNumberIdx+1]) {
 			symbol := line[endOfNumberIdx]
 			return true, symbol, possibleNumber.LineNumber, endOfNumberIdx
 		}
